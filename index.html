@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GripTape Video Curriculum</title>
+<meta name="description" content="marian caballo: the videos i made for griptape's challenge 2.0, week by week.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* layout: one soft column; weeks hang off a thin spine, videos sit in a simple grid under each */
+:root{
+  --paper:#FFF6C7;
+  --tile:#FFFBE6;
+  --ink:#2A2822;
+  --soft:#7D7552;
+  --spine:#E8D98A;
+  --font-body:"Geist", "Helvetica Neue", Arial, sans-serif;
+  --font-mono:"Geist Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--font-body); font-size:16px; line-height:1.5}
+a{color:inherit}
+a:focus-visible{outline:2px solid var(--ink); outline-offset:3px; border-radius:10px}
+.wrap{max-width:960px; margin:0 auto; padding:0 24px}
+
+header{padding:40px 0 8px}
+.name{font-weight:700; text-decoration:none}
+h1{font-size:clamp(30px, 5vw, 44px); line-height:1.05; letter-spacing:-0.02em; margin:44px 0 10px; font-weight:700}
+.sub{color:var(--soft); max-width:56ch}
+
+.week{position:relative; margin-top:44px; padding-left:22px; border-left:2px solid var(--spine)}
+.week-h{display:flex; align-items:baseline; gap:10px; margin:0 0 14px; flex-wrap:wrap}
+.week-h h2{margin:0; font-size:20px; font-weight:700}
+.week-h span{color:var(--soft)}
+.week::before{content:""; position:absolute; left:-7px; top:9px; width:12px; height:12px; border-radius:50%; background:var(--ink)}
+.group{margin:0 0 22px}
+.group h3{margin:0 0 10px; font-family:var(--font-mono); font-size:13px; font-weight:400; color:var(--soft)}
+
+.grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap:16px}
+.vid{display:flex; flex-direction:column; gap:8px; margin:0}
+.frame{position:relative; aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:var(--tile); box-shadow:0 0 0 1px var(--spine)}
+.frame.tall{aspect-ratio:9/16}
+.frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.tilelink{position:absolute; inset:0; display:grid; place-items:center; text-decoration:none}
+.tilelink .btn{width:52px; height:52px; border-radius:50%; background:var(--ink); color:var(--paper); display:grid; place-items:center; font-size:16px; padding-left:3px; transition:transform .15s ease}
+.tilelink:hover .btn{transform:scale(1.08)}
+.vid figcaption{font-size:15px; font-weight:500}
+.vid figcaption span{color:var(--soft); font-weight:400}
+
+footer{margin-top:64px; padding:20px 0 40px; border-top:2px solid var(--spine); display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; color:var(--soft); font-family:var(--font-mono); font-size:13px}
+footer a{text-decoration:none}
+footer a:hover{color:var(--ink); text-decoration:underline}
+
+@media (prefers-reduced-motion: reduce){ .tilelink .btn{transition:none} }
+@media (max-width: 520px){ .wrap{padding:0 18px} .week{padding-left:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="name" href="https://mariancaballo.vercel.app/">marian caballo.</a>
+    <h1>griptape video curriculum</h1>
+    <p class="sub">short videos i made for griptape's challenge 2.0, a six-week program helping young people land their first real role. one intro per challenge, plus tips for the hard parts.</p>
+  </header>
+
+  <main id="course"></main>
+
+  <footer>
+    <span>marian caballo · mcc284@cornell.edu</span>
+    <a href="https://mariancaballo.vercel.app/">← back to portfolio</a>
+  </footer>
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   THE COURSE. Each video is a Google Drive file id.
+   Add  tall: true  to any video that was shot vertical (9:16).
+---------------------------------------------------------------- */
+const COURSE = [
+  { week: "week 1", sub: "figuring out what you want", groups: [
+    { name: "challenge 1 · the 10", videos: [
+      { t: "tip 1", id: "1Fb1kAdW88QGJp9II9zsIA064hQR-M0Ca" },
+      { t: "tip 2", id: "1FfYpTALHREi3DRJN-AjL7a48n09-sO6A" }
+    ]}
+  ]},
+  { week: "week 2", sub: "research and narrowing down", groups: [
+    { name: "challenges 1 + 2", videos: [
+      { t: "intro", id: "18N_5yvULJl9JeRaPsxOp5XPpuw7VItwF" },
+      { t: "tip 1", id: "1gVFoJx3swvPgsmWdK16CHphsjunEVsQb" },
+      { t: "tip 2", id: "1TuekHgO6mDTEMmF3etjSIYpwWhbXs97h" }
+    ]},
+    { name: "challenge 3", videos: [
+      { t: "intro", id: "1Dsogs6q5YULhdmnBgOX9tLeR3vugFy2X" },
+      { t: "tip 3", note: "ethan's story", id: "1jaV7Dkl9JXQOZ-Leb0tsDFaOLgOgYqEp" },
+      { t: "tip 4", id: "1-aZkPNsLd2vRmdrYoUlStlmj0KUVw9jf" }
+    ]}
+  ]},
+  { week: "week 3", sub: "the pitch", groups: [
+    { name: "", videos: [
+      { t: "preparing for a phone pitch", id: "14aI2p1oYmNlWikYS_yXDS5cwVmal2ovr" },
+      { t: "roleplay tip", id: "1vb9nl7ZXwKqxWKTfR0y3ipVtSWzimlos" }
+    ]}
+  ]}
+];
+
+/* On your own site the Drive players load right on the page.
+   Inside a framed preview (where outside players are blocked),
+   each tile opens the video in Drive instead. */
+const CAN_EMBED = window.self === window.top;
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function video(v){
+  const view = "https://drive.google.com/file/d/" + v.id + "/view";
+  const player = "https://drive.google.com/file/d/" + v.id + "/preview";
+  const label = esc(v.t) + (v.note ? " <span>· " + esc(v.note) + "</span>" : "");
+  const inner = CAN_EMBED
+    ? '<iframe src="' + player + '" title="' + esc(v.t + (v.note ? " – " + v.note : "")) + '" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>'
+    : '<a class="tilelink" href="' + view + '" aria-label="Play ' + esc(v.t) + '"><span class="btn" aria-hidden="true">▶</span></a>';
+  return '<figure class="vid"><div class="frame' + (v.tall ? " tall" : "") + '">' + inner + '</div><figcaption>' + label + '</figcaption></figure>';
+}
+
+document.getElementById("course").innerHTML = COURSE.map(w =>
+  '<section class="week"><div class="week-h"><h2>' + esc(w.week) + '</h2><span>' + esc(w.sub) + '</span></div>' +
+  w.groups.map(g => '<div class="group">' + (g.name ? '<h3>' + esc(g.name) + '</h3>' : '') + '<div class="grid">' + g.videos.map(video).join("") + '</div></div>').join("") +
+  '</section>'
+).join("");
+</script>
+</body>
+</html>
