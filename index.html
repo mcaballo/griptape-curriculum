@@ -163,7 +163,8 @@ const COURSE = [
   { week: "before griptape", sub: "explainer videos from the new york hall of science", groups: [
     { name: "", videos: [
       { t: "make a holographic projector with your phone", dir: "nysci/", f: "holographic-projector.mp4" },
-      { t: "the happiness experiment at nysci", dir: "nysci/", f: "happiness-experiment.mp4" }
+      { t: "the happiness experiment at nysci", dir: "nysci/", f: "happiness-experiment.mp4" },
+      { t: "recyclables take charge", note: "static electricity", dir: "nysci/", f: "recyclables-take-charge.mp4" }
     ]}
   ]}
 ];
@@ -192,7 +193,12 @@ function video(v){
   const label = esc(v.t) + (v.note ? " <span>· " + esc(v.note) + "</span>" : "");
   /* each tile loops a small silent copy while it's on screen; click it to watch with sound up top */
   const inner = '<video src="' + path(v.dir || PREVIEW_DIR, v.f) + '" muted loop playsinline preload="none" disablepictureinpicture></video>';
-  return '<figure class="vid"><button type="button" class="frame' + (v.tall ? " tall" : "") + '" data-f="' + esc(v.f) + '"' + (v.dir ? ' data-dir="' + esc(v.dir) + '"' : '') + ' aria-label="Play ' + esc(v.t + (v.note ? " – " + v.note : "")) + ' with sound">' + inner + '</button><figcaption>' + label + '</figcaption></figure>';
+  const name = esc(v.t + (v.note ? " – " + v.note : ""));
+  /* videos with their own folder (the nysci ones) just loop in place; they don't open up top */
+  const frame = v.dir
+    ? '<div class="frame' + (v.tall ? " tall" : "") + '" role="img" aria-label="' + name + '">' + inner + '</div>'
+    : '<button type="button" class="frame' + (v.tall ? " tall" : "") + '" data-f="' + esc(v.f) + '" aria-label="Play ' + name + ' with sound">' + inner + '</button>';
+  return '<figure class="vid">' + frame + '<figcaption>' + label + '</figcaption></figure>';
 }
 
 document.getElementById("course").innerHTML = COURSE.map(w =>
@@ -224,8 +230,8 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
     } catch (e) {}
   }
 
-  function load(f, at, dir){
-    vid.src = dir ? path(dir, f) : fileUrl(f, at);
+  function load(f, at){
+    vid.src = fileUrl(f, at);
     vid.setAttribute("aria-label", labels[f]);
     title.textContent = labels[f];
     const n = HERO.indexOf(f);
@@ -240,12 +246,12 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
     const tile = e.target.closest("button.frame");
     if (!tile) return;
     preview = false; vid.muted = false;
-    load(tile.dataset.f, 0, tile.dataset.dir);
+    load(tile.dataset.f);
     document.querySelector(".hero").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   /* tiles only play (and so only download) while they're on screen */
-  const tiles = document.querySelectorAll("button.frame video");
+  const tiles = document.querySelectorAll(".frame video");
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver(entries => entries.forEach(en => {
       if (en.isIntersecting) en.target.play().catch(() => {}); else en.target.pause();
