@@ -31,6 +31,17 @@ header{padding:40px 0 8px}
 h1{font-size:clamp(30px, 5vw, 44px); line-height:1.05; letter-spacing:-0.02em; margin:44px 0 10px; font-weight:700}
 .sub{color:var(--soft); max-width:56ch}
 
+.hero{margin:28px 0 0}
+.hero-frame{position:relative; aspect-ratio:16/9; border-radius:16px; overflow:hidden; background:#000; box-shadow:0 0 0 1px var(--spine)}
+.hero-frame video{position:absolute; inset:0; width:100%; height:100%; object-fit:contain}
+.arrow{position:absolute; top:50%; translate:0 -50%; width:44px; height:44px; border-radius:50%; border:0; background:var(--paper); color:var(--ink); font:inherit; font-size:20px; line-height:1; cursor:pointer; display:grid; place-items:center; box-shadow:0 1px 6px rgba(0,0,0,.35); transition:transform .15s ease}
+.arrow:hover{transform:scale(1.08)}
+.arrow:focus-visible{outline:2px solid var(--paper); outline-offset:2px}
+.arrow.prev{left:12px} .arrow.next{right:12px}
+.hero-cap{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-top:10px}
+.hero-cap strong{font-weight:500}
+.hero-cap span{color:var(--soft); font-family:var(--font-mono); font-size:13px}
+
 .week{position:relative; margin-top:44px; padding-left:22px; border-left:2px solid var(--spine)}
 .week-h{display:flex; align-items:baseline; gap:10px; margin:0 0 14px; flex-wrap:wrap}
 .week-h h2{margin:0; font-size:20px; font-weight:700}
@@ -54,7 +65,7 @@ footer{margin-top:64px; padding:20px 0 40px; border-top:2px solid var(--spine); 
 footer a{text-decoration:none}
 footer a:hover{color:var(--ink); text-decoration:underline}
 
-@media (prefers-reduced-motion: reduce){ .tilelink .btn{transition:none} }
+@media (prefers-reduced-motion: reduce){ .arrow{transition:none} }
 @media (max-width: 520px){ .wrap{padding:0 18px} .week{padding-left:16px} }
 </style>
 </head>
@@ -65,6 +76,15 @@ footer a:hover{color:var(--ink); text-decoration:underline}
     <h1>griptape video curriculum</h1>
     <p class="sub">short videos i made for griptape's challenge 2.0, a six-week program helping young people land their first real role. one intro per challenge, plus tips for the hard parts.</p>
   </header>
+
+  <section class="hero" aria-label="Featured videos">
+    <div class="hero-frame">
+      <video id="heroVideo" controls playsinline preload="metadata"></video>
+      <button class="arrow prev" id="heroPrev" type="button" aria-label="Previous video">←</button>
+      <button class="arrow next" id="heroNext" type="button" aria-label="Next video">→</button>
+    </div>
+    <div class="hero-cap"><strong id="heroTitle"></strong><span id="heroCount"></span></div>
+  </section>
 
   <main id="course"></main>
 
@@ -126,10 +146,22 @@ const COURSE = [
   ]}
 ];
 
+/* The hero at the top: the best on-camera videos, in this order. */
+const HERO = [
+  "week 5 dos and donts.mp4",
+  "week 5 challenge intro.mp4",
+  "roleplay tip vid.mp4",
+  "week 3 challenge 1.mp4",
+  "week 3 tip 1.mp4",
+  "week 4 tip.mp4"
+];
+
+function fileUrl(f){ return encodeURI(DIR + f).replace(/'/g, "%27") + "#t=0.1"; }
+
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 function video(v){
-  const src = encodeURI(DIR + v.f).replace(/'/g, "%27") + "#t=0.1";
+  const src = fileUrl(v.f);
   const label = esc(v.t) + (v.note ? " <span>· " + esc(v.note) + "</span>" : "");
   const inner = '<video src="' + src + '" controls playsinline preload="metadata" aria-label="' + esc(v.t + (v.note ? " – " + v.note : "")) + '"></video>';
   return '<figure class="vid"><div class="frame' + (v.tall ? " tall" : "") + '">' + inner + '</div><figcaption>' + label + '</figcaption></figure>';
@@ -140,6 +172,25 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
   w.groups.map(g => '<div class="group">' + (g.name ? '<h3>' + esc(g.name) + '</h3>' : '') + '<div class="grid">' + g.videos.map(video).join("") + '</div></div>').join("") +
   '</section>'
 ).join("");
+
+(function(){
+  const labels = {};
+  COURSE.forEach(w => w.groups.forEach(g => g.videos.forEach(v => { labels[v.f] = w.week + " · " + v.t; })));
+  const vid = document.getElementById("heroVideo"), title = document.getElementById("heroTitle"), count = document.getElementById("heroCount");
+  let i = 0;
+  function show(n, keepPlaying){
+    i = (n + HERO.length) % HERO.length;
+    vid.src = fileUrl(HERO[i]);
+    vid.setAttribute("aria-label", labels[HERO[i]]);
+    title.textContent = labels[HERO[i]];
+    count.textContent = (i + 1) + " / " + HERO.length;
+    if (keepPlaying) vid.play().catch(() => {});
+  }
+  document.getElementById("heroPrev").addEventListener("click", () => show(i - 1, !vid.paused));
+  document.getElementById("heroNext").addEventListener("click", () => show(i + 1, !vid.paused));
+  vid.addEventListener("ended", () => show(i + 1, true));
+  show(0, false);
+})();
 </script>
 </body>
 </html>
