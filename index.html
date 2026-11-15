@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GripTape Video Curriculum</title>
-<meta name="description" content="marian caballo: the videos i made for griptape's challenge 2.0, week by week.">
+<meta name="description" content="marian caballo: the video curriculum i designed for griptape's challenge 2.0, week by week.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
@@ -62,7 +62,10 @@ h1{font-size:clamp(30px, 5vw, 44px); line-height:1.05; letter-spacing:-0.02em; m
 .vid{display:flex; flex-direction:column; gap:8px; margin:0}
 .frame{position:relative; aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:var(--tile); box-shadow:0 0 0 1px var(--spine)}
 .frame.tall{aspect-ratio:9/16}
-.frame video{position:absolute; inset:0; width:100%; height:100%; border:0; object-fit:contain; background:#000}
+.frame video{position:absolute; inset:0; width:100%; height:100%; border:0; object-fit:cover; background:#000; pointer-events:none}
+button.frame{display:block; width:100%; padding:0; border:0; font:inherit; cursor:pointer; transition:transform .2s ease, box-shadow .2s ease}
+button.frame:hover{transform:translateY(-2px); box-shadow:0 0 0 2px var(--ink)}
+button.frame:focus-visible{outline:2px solid var(--ink); outline-offset:3px}
 .tilelink{position:absolute; inset:0; display:grid; place-items:center; text-decoration:none}
 .tilelink .btn{width:52px; height:52px; border-radius:50%; background:var(--ink); color:var(--paper); display:grid; place-items:center; font-size:16px; padding-left:3px; transition:transform .15s ease}
 .tilelink:hover .btn{transform:scale(1.08)}
@@ -73,7 +76,7 @@ footer{margin-top:64px; padding:20px 0 40px; border-top:2px solid var(--spine); 
 footer a{text-decoration:none}
 footer a:hover{color:var(--ink); text-decoration:underline}
 
-@media (prefers-reduced-motion: reduce){ .arrow{transition:none} }
+@media (prefers-reduced-motion: reduce){ .arrow, button.frame{transition:none} }
 @media (max-width: 520px){ .wrap{padding:0 18px} .week{padding-left:16px} }
 </style>
 </head>
@@ -85,7 +88,7 @@ footer a:hover{color:var(--ink); text-decoration:underline}
       <a class="for" href="https://griptape.org/" target="_blank" rel="noopener">made for <img src="griptape-logo.png" alt="GripTape" width="94" height="30"></a>
     </div>
     <h1>griptape video curriculum</h1>
-    <p class="sub">short videos i made for <a href="https://griptape.org/" target="_blank" rel="noopener">griptape</a>'s challenge 2.0, a six-week program helping young people land their first real role. one intro per challenge, plus tips for the hard parts.</p>
+    <p class="sub">i designed the video curriculum for <a href="https://griptape.org/" target="_blank" rel="noopener">griptape</a>'s challenge 2.0, a six-week program helping young people land their first real role. short videos: one intro per challenge, plus tips for the hard parts.</p>
   </header>
 
   <section class="hero" aria-label="Featured videos">
@@ -172,15 +175,17 @@ const HERO = [
 /* The silent preview on page load opens here (seconds), where i'm on camera. */
 const HERO_PREVIEW_AT = 17;
 
-function fileUrl(f, at){ return encodeURI(DIR + f).replace(/'/g, "%27") + "#t=" + (at || 0.1); }
+const PREVIEW_DIR = "previews/";   // small silent copies that loop in the tiles
+function path(dir, f){ return encodeURI(dir + f).replace(/'/g, "%27"); }
+function fileUrl(f, at){ return path(DIR, f) + "#t=" + (at || 0.1); }
 
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 function video(v){
-  const src = fileUrl(v.f);
   const label = esc(v.t) + (v.note ? " <span>· " + esc(v.note) + "</span>" : "");
-  const inner = '<video src="' + src + '" controls playsinline preload="metadata" aria-label="' + esc(v.t + (v.note ? " – " + v.note : "")) + '"></video>';
-  return '<figure class="vid"><div class="frame' + (v.tall ? " tall" : "") + '">' + inner + '</div><figcaption>' + label + '</figcaption></figure>';
+  /* each tile loops a small silent copy while it's on screen; click it to watch with sound up top */
+  const inner = '<video src="' + path(PREVIEW_DIR, v.f) + '" muted loop playsinline preload="none" disablepictureinpicture></video>';
+  return '<figure class="vid"><button type="button" class="frame' + (v.tall ? " tall" : "") + '" data-f="' + esc(v.f) + '" aria-label="Play ' + esc(v.t + (v.note ? " – " + v.note : "")) + ' with sound">' + inner + '</button><figcaption>' + label + '</figcaption></figure>';
 }
 
 document.getElementById("course").innerHTML = COURSE.map(w =>
@@ -212,14 +217,34 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
     } catch (e) {}
   }
 
-  function show(n, at){
-    i = (n + HERO.length) % HERO.length;
-    vid.src = fileUrl(HERO[i], at);
-    vid.setAttribute("aria-label", labels[HERO[i]]);
-    title.textContent = labels[HERO[i]];
-    count.textContent = (i + 1) + " / " + HERO.length;
+  function load(f, at){
+    vid.src = fileUrl(f, at);
+    vid.setAttribute("aria-label", labels[f]);
+    title.textContent = labels[f];
+    const n = HERO.indexOf(f);
+    if (n >= 0) i = n;
+    count.textContent = n >= 0 ? (n + 1) + " / " + HERO.length : "";
     vid.play().catch(() => {});
   }
+  function show(n, at){ load(HERO[(n + HERO.length) % HERO.length], at); }
+
+  /* clicking any tile below plays that video up here, with sound */
+  document.getElementById("course").addEventListener("click", e => {
+    const tile = e.target.closest("button.frame");
+    if (!tile) return;
+    preview = false; vid.muted = false;
+    load(tile.dataset.f);
+    document.querySelector(".hero").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  /* tiles only play (and so only download) while they're on screen */
+  const tiles = document.querySelectorAll("button.frame video");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (en.isIntersecting) en.target.play().catch(() => {}); else en.target.pause();
+    }), { rootMargin: "100px" });
+    tiles.forEach(t => io.observe(t));
+  } else tiles.forEach(t => t.play().catch(() => {}));
   function step(d){ blip(d > 0); preview = false; vid.muted = false; show(i + d); }
 
   document.getElementById("heroPrev").addEventListener("click", () => step(-1));
