@@ -27,6 +27,11 @@ a:focus-visible{outline:2px solid var(--ink); outline-offset:3px; border-radius:
 .wrap{max-width:960px; margin:0 auto; padding:0 24px}
 
 header{padding:40px 0 8px}
+.top{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap}
+.for{display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:var(--soft); font-family:var(--font-mono); font-size:13px}
+.for img{height:30px; width:auto; display:block; filter:brightness(0); opacity:.82}
+.for:hover img{opacity:1}
+.sub a{text-underline-offset:3px}
 .name{font-weight:700; text-decoration:none}
 h1{font-size:clamp(30px, 5vw, 44px); line-height:1.05; letter-spacing:-0.02em; margin:44px 0 10px; font-weight:700}
 .sub{color:var(--soft); max-width:56ch}
@@ -75,9 +80,12 @@ footer a:hover{color:var(--ink); text-decoration:underline}
 <body>
 <div class="wrap">
   <header>
-    <a class="name" href="https://mariancaballo.vercel.app/">marian caballo.</a>
+    <div class="top">
+      <a class="name" href="https://mariancaballo.vercel.app/">marian caballo.</a>
+      <a class="for" href="https://griptape.org/" target="_blank" rel="noopener">made for <img src="griptape-logo.png" alt="GripTape" width="94" height="30"></a>
+    </div>
     <h1>griptape video curriculum</h1>
-    <p class="sub">short videos i made for griptape's challenge 2.0, a six-week program helping young people land their first real role. one intro per challenge, plus tips for the hard parts.</p>
+    <p class="sub">short videos i made for <a href="https://griptape.org/" target="_blank" rel="noopener">griptape</a>'s challenge 2.0, a six-week program helping young people land their first real role. one intro per challenge, plus tips for the hard parts.</p>
   </header>
 
   <section class="hero" aria-label="Featured videos">
