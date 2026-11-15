@@ -158,6 +158,13 @@ const COURSE = [
       { t: "challenge intro", f: "week 5 challenge intro.mp4" },
       { t: "dos and don'ts", f: "week 5 dos and donts.mp4" }
     ]}
+  ]},
+  /* not griptape: earlier explainer videos, kept in the "nysci" folder */
+  { week: "before griptape", sub: "explainer videos from the new york hall of science", groups: [
+    { name: "", videos: [
+      { t: "make a holographic projector with your phone", dir: "nysci/", f: "holographic-projector.mp4" },
+      { t: "the happiness experiment at nysci", dir: "nysci/", f: "happiness-experiment.mp4" }
+    ]}
   ]}
 ];
 
@@ -184,8 +191,8 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt
 function video(v){
   const label = esc(v.t) + (v.note ? " <span>· " + esc(v.note) + "</span>" : "");
   /* each tile loops a small silent copy while it's on screen; click it to watch with sound up top */
-  const inner = '<video src="' + path(PREVIEW_DIR, v.f) + '" muted loop playsinline preload="none" disablepictureinpicture></video>';
-  return '<figure class="vid"><button type="button" class="frame' + (v.tall ? " tall" : "") + '" data-f="' + esc(v.f) + '" aria-label="Play ' + esc(v.t + (v.note ? " – " + v.note : "")) + ' with sound">' + inner + '</button><figcaption>' + label + '</figcaption></figure>';
+  const inner = '<video src="' + path(v.dir || PREVIEW_DIR, v.f) + '" muted loop playsinline preload="none" disablepictureinpicture></video>';
+  return '<figure class="vid"><button type="button" class="frame' + (v.tall ? " tall" : "") + '" data-f="' + esc(v.f) + '"' + (v.dir ? ' data-dir="' + esc(v.dir) + '"' : '') + ' aria-label="Play ' + esc(v.t + (v.note ? " – " + v.note : "")) + ' with sound">' + inner + '</button><figcaption>' + label + '</figcaption></figure>';
 }
 
 document.getElementById("course").innerHTML = COURSE.map(w =>
@@ -217,8 +224,8 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
     } catch (e) {}
   }
 
-  function load(f, at){
-    vid.src = fileUrl(f, at);
+  function load(f, at, dir){
+    vid.src = dir ? path(dir, f) : fileUrl(f, at);
     vid.setAttribute("aria-label", labels[f]);
     title.textContent = labels[f];
     const n = HERO.indexOf(f);
@@ -233,7 +240,7 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
     const tile = e.target.closest("button.frame");
     if (!tile) return;
     preview = false; vid.muted = false;
-    load(tile.dataset.f);
+    load(tile.dataset.f, 0, tile.dataset.dir);
     document.querySelector(".hero").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
