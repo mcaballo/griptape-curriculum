@@ -160,6 +160,7 @@ const COURSE = [
 
 /* The hero at the top: the best on-camera videos, in this order. */
 const HERO = [
+  "W2,challenge 3 intro.mp4",
   "week 5 dos and donts.mp4",
   "week 5 challenge intro.mp4",
   "roleplay tip vid.mp4",
@@ -168,7 +169,10 @@ const HERO = [
   "week 4 tip.mp4"
 ];
 
-function fileUrl(f){ return encodeURI(DIR + f).replace(/'/g, "%27") + "#t=0.1"; }
+/* The silent preview on page load opens here (seconds), where i'm on camera. */
+const HERO_PREVIEW_AT = 17;
+
+function fileUrl(f, at){ return encodeURI(DIR + f).replace(/'/g, "%27") + "#t=" + (at || 0.1); }
 
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
@@ -190,7 +194,7 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
   COURSE.forEach(w => w.groups.forEach(g => g.videos.forEach(v => { labels[v.f] = w.week + " · " + v.t; })));
   const vid = document.getElementById("heroVideo"), title = document.getElementById("heroTitle"), count = document.getElementById("heroCount");
   const soundBtn = document.getElementById("heroSound");
-  let i = 0, ctx = null;
+  let i = 0, ctx = null, preview = true;
 
   /* a short soft blip on each arrow click: higher going forward, lower going back */
   function blip(up){
@@ -208,23 +212,24 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
     } catch (e) {}
   }
 
-  function show(n){
+  function show(n, at){
     i = (n + HERO.length) % HERO.length;
-    vid.src = fileUrl(HERO[i]);
+    vid.src = fileUrl(HERO[i], at);
     vid.setAttribute("aria-label", labels[HERO[i]]);
     title.textContent = labels[HERO[i]];
     count.textContent = (i + 1) + " / " + HERO.length;
     vid.play().catch(() => {});
   }
-  function step(d){ blip(d > 0); vid.muted = false; show(i + d); }
+  function step(d){ blip(d > 0); preview = false; vid.muted = false; show(i + d); }
 
   document.getElementById("heroPrev").addEventListener("click", () => step(-1));
   document.getElementById("heroNext").addEventListener("click", () => step(1));
-  soundBtn.addEventListener("click", () => { vid.muted = false; vid.play().catch(() => {}); });
+  /* turning sound on restarts the previewed video from the top */
+  soundBtn.addEventListener("click", () => { if (preview) { vid.currentTime = 0; preview = false; } vid.muted = false; vid.play().catch(() => {}); });
   vid.addEventListener("volumechange", () => { soundBtn.hidden = !vid.muted; });
   vid.addEventListener("ended", () => show(i + 1));
   /* the first video starts on its own, muted, until you tap for sound or click an arrow */
-  show(0);
+  show(0, HERO_PREVIEW_AT);
 })();
 </script>
 </body>
