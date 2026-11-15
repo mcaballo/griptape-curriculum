@@ -191,7 +191,7 @@ document.getElementById("course").innerHTML = COURSE.map(w =>
 
 (function(){
   const labels = {};
-  COURSE.forEach(w => w.groups.forEach(g => g.videos.forEach(v => { labels[v.f] = w.week + " · " + v.t; })));
+  COURSE.forEach(w => w.groups.forEach(g => g.videos.forEach(v => { labels[v.f] = w.week + (g.name ? " · " + g.name : "") + " · " + v.t; })));
   const vid = document.getElementById("heroVideo"), title = document.getElementById("heroTitle"), count = document.getElementById("heroCount");
   const soundBtn = document.getElementById("heroSound");
   let i = 0, ctx = null, preview = true;
